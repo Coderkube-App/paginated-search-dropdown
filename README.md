@@ -2,6 +2,12 @@
 
 A highly customizable, paginated async search dropdown for React Native (Expo and Bare).
 
+## 🎬 Demo
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Coderkube-App/paginated-search-dropdown/main/assets/paginated_dropdown_demo.svg" alt="Paginated Search Dropdown Demo" width="800" />
+</p>
+
 ## Features
 
 - **Async Search** - Load options dynamically based on search query

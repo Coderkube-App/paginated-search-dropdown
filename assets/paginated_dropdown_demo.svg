@@ -25,7 +25,6 @@
 
       /* Dropdown UI styles */
       .search-box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; }
-      .search-box-active { stroke: #6366f1; stroke-width: 1.5; }
       .dropdown-list { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.06)); }
       .item-hover { fill: #f1f5f9; }
 
@@ -40,7 +39,7 @@
          8.8s - 10s : Hold selected, loops
       ═════════════════════════════════ */
 
-      /* Input Border State */
+      /* Input Border State animation */
       @keyframes borderState {
         0%, 15% { stroke: #cbd5e1; stroke-width: 1; }
         18%, 82% { stroke: #6366f1; stroke-width: 1.5; }
@@ -96,23 +95,23 @@
       }
       .debounce-spinner {
         animation: rotate 1s linear infinite, spinnerVis 10s steps(1) infinite;
-        transform-origin: 206px 113px;
+        transform-origin: 188px 17px; /* Adjusted transform-origin relative to the parent Y=96 X=20 group coordinate */
       }
 
       /* Dropdown List overall Slide/Fade open */
       @keyframes dropdownOpen {
-        0%, 40% { opacity: 0; transform: translateY(-5px); pointer-events: none; }
-        43%, 82% { opacity: 1; transform: translateY(0); pointer-events: auto; }
-        85%, 100% { opacity: 0; transform: translateY(-5px); pointer-events: none; }
+        0%, 40% { opacity: 0; transform: translateY(-6px); }
+        43%, 82% { opacity: 1; transform: translateY(0); }
+        85%, 100% { opacity: 0; transform: translateY(-6px); }
       }
-      .dropdown-container {
+      .dropdown-anim-wrapper {
         animation: dropdownOpen 10s cubic-bezier(0.25, 1, 0.5, 1) infinite;
       }
 
       /* Dropdown Scroll & Infinite Paginate Offset */
       @keyframes listScroll {
         0%, 65% { transform: translateY(0); }
-        70%, 82% { transform: translateY(-84px); } /* Scrolls down past Jane Doe and Janet to show Jansen and Janice */
+        70%, 82% { transform: translateY(-84px); }
         85%, 100% { transform: translateY(0); }
       }
       .scrollable-list {
@@ -127,7 +126,7 @@
       }
       .footer-spinner {
         animation: rotate 1s linear infinite, footerSpinnerVis 10s steps(1) infinite;
-        transform-origin: 125px 233px;
+        transform-origin: 105px 233px; /* Centered in the 210px width dropdown box Y=233 */
       }
 
       /* Infinite loaded items (Page 2) fading in */
@@ -193,10 +192,10 @@
     <!-- Screen Content Base View -->
     <rect fill="#f8fafc" x="10" y="76" width="230" height="314" rx="0" ry="20" />
 
-    <!-- ═══ DROP DOWN CONTAINER ═══ -->
+    <!-- ═══ DROP DOWN CONTAINER (X=20 translates X=10 relative to the X=10 phone screen, providing exact symmetrical centering!) ═══ -->
     <g transform="translate(20, 96)">
       
-      <!-- Input Field -->
+      <!-- Input Field Box -->
       <rect class="search-box input-border" x="0" y="0" width="210" height="34" rx="6" ry="6" />
       <text class="label-font placeholder-text" x="12" y="21" fill="#94a3b8">Search users...</text>
       
@@ -205,7 +204,7 @@
       <!-- Blinking cursor -->
       <line class="cursor-line" x1="44" y1="9" x2="44" y2="23" stroke="#6366f1" stroke-width="1.5" />
 
-      <!-- Selection Pill -->
+      <!-- Selection Pill (Appears upon final selection) -->
       <g class="selected-pill">
         <rect x="6" y="5" width="80" height="24" rx="12" ry="12" fill="#6366f1" />
         <text font-family="Inter, sans-serif" font-size="9px" font-weight="700" fill="#ffffff" x="14" y="20">Jane Doe</text>
@@ -215,73 +214,75 @@
 
       <!-- Debounce Spinner (Loading...) -->
       <g class="debounce-spinner" opacity="0">
-        <circle cx="206" cy="113" r="6" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
-        <path d="M 206,107 A 6,6 0 0,1 212,113" fill="none" stroke="#6366f1" stroke-width="1.5" />
+        <circle cx="188" cy="17" r="6" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
+        <path d="M 188,11 A 6,6 0 0,1 194,17" fill="none" stroke="#6366f1" stroke-width="1.5" />
       </g>
 
       <!-- Search Magnifier Icon -->
-      <g transform="translate(186, 9)" opacity="0.6">
+      <g transform="translate(182, 9)" opacity="0.6">
         <circle cx="6" cy="6" r="4" fill="none" stroke="#64748b" stroke-width="1.5" />
         <line x1="9" y1="9" x2="13" y2="13" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" />
       </g>
 
-      <!-- Dropdown Menu List -->
-      <g class="dropdown-container" transform="translate(0, 38)">
-        <rect class="dropdown-list" width="210" height="175" rx="8" ry="8" />
+      <!-- Dropdown Menu List: Outer group controls Y positioning, inner handles the CSS fade/slide animation to avoid transform conflicts! -->
+      <g transform="translate(0, 38)">
+        <g class="dropdown-anim-wrapper">
+          <rect class="dropdown-list" width="210" height="175" rx="8" ry="8" />
 
-        <!-- Scrollable list wrapper (Clip Path so it doesn't render outside dropdown boundaries) -->
-        <g clip-path="url(#dropdown-clipper)">
-          <clipPath id="dropdown-clipper">
-            <rect width="210" height="175" rx="8" ry="8" />
-          </clipPath>
+          <!-- Scrollable list wrapper (Clip Path so it doesn't render outside dropdown boundaries) -->
+          <g clip-path="url(#dropdown-clipper)">
+            <clipPath id="dropdown-clipper">
+              <rect width="210" height="175" rx="8" ry="8" />
+            </clipPath>
 
-          <g class="scrollable-list">
-            <!-- Row 1: Jane Doe (Highlighted/Selected target) -->
-            <g transform="translate(0, 0)">
-              <rect class="item-hover" width="210" height="42" opacity="0.4" />
-              <text class="label-font" x="12" y="19">Jane Doe</text>
-              <text class="sub-label-font" x="12" y="32">jane.doe@example.com</text>
-              <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
+            <g class="scrollable-list">
+              <!-- Row 1: Jane Doe (Highlighted/Selected target) -->
+              <g transform="translate(0, 0)">
+                <rect class="item-hover" width="210" height="42" opacity="0.4" />
+                <text class="label-font" x="12" y="19">Jane Doe</text>
+                <text class="sub-label-font" x="12" y="32">jane.doe@example.com</text>
+                <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
+              </g>
+
+              <!-- Row 2: Janet Smith -->
+              <g transform="translate(0, 42)">
+                <text class="label-font" x="12" y="19">Janet Smith</text>
+                <text class="sub-label-font" x="12" y="32">janet.smith@example.com</text>
+                <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
+              </g>
+
+              <!-- Row 3: Janie Jenkins -->
+              <g transform="translate(0, 84)">
+                <text class="label-font" x="12" y="19">Janie Jenkins</text>
+                <text class="sub-label-font" x="12" y="32">janie@example.com</text>
+                <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
+              </g>
+
+              <!-- Row 4: (Page 2) Janice Miller -->
+              <g class="page-2-item" transform="translate(0, 126)" opacity="0">
+                <text class="label-font" x="12" y="19">Janice Miller</text>
+                <text class="sub-label-font" x="12" y="32">janice.m@example.com</text>
+                <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
+              </g>
+
+              <!-- Row 5: (Page 2) Jansen Patel -->
+              <g class="page-2-item" transform="translate(0, 168)" opacity="0">
+                <text class="label-font" x="12" y="19">Jansen Patel</text>
+                <text class="sub-label-font" x="12" y="32">jansen.p@example.com</text>
+              </g>
             </g>
 
-            <!-- Row 2: Janet Smith -->
-            <g transform="translate(0, 42)">
-              <text class="label-font" x="12" y="19">Janet Smith</text>
-              <text class="sub-label-font" x="12" y="32">janet.smith@example.com</text>
-              <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
+            <!-- Spinner at the bottom representing loading more results -->
+            <g class="footer-spinner" opacity="0">
+              <circle cx="105" cy="233" r="6" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
+              <path d="M 105,227 A 6,6 0 0,1 111,233" fill="none" stroke="#6366f1" stroke-width="1.5" />
             </g>
-
-            <!-- Row 3: Janie Jenkins -->
-            <g transform="translate(0, 84)">
-              <text class="label-font" x="12" y="19">Janie Jenkins</text>
-              <text class="sub-label-font" x="12" y="32">janie@example.com</text>
-              <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
-            </g>
-
-            <!-- Row 4: (Page 2) Janice Miller -->
-            <g class="page-2-item" transform="translate(0, 126)" opacity="0">
-              <text class="label-font" x="12" y="19">Janice Miller</text>
-              <text class="sub-label-font" x="12" y="32">janice.m@example.com</text>
-              <line x1="0" y1="42" x2="210" y2="42" stroke="#f1f5f9" stroke-width="1" />
-            </g>
-
-            <!-- Row 5: (Page 2) Jansen Patel -->
-            <g class="page-2-item" transform="translate(0, 168)" opacity="0">
-              <text class="label-font" x="12" y="19">Jansen Patel</text>
-              <text class="sub-label-font" x="12" y="32">jansen.p@example.com</text>
-            </g>
-          </g>
-
-          <!-- Spinner at the bottom representing loading more results -->
-          <g class="footer-spinner" opacity="0">
-            <circle cx="125" cy="233" r="6" fill="none" stroke="#e2e8f0" stroke-width="1.5" />
-            <path d="M 125,227 A 6,6 0 0,1 131,233" fill="none" stroke="#6366f1" stroke-width="1.5" />
           </g>
         </g>
       </g>
 
       <!-- Selection Tap Target Ring on Jane Doe -->
-      <circle class="ring-select" cx="125" cy="172" r="15" fill="none" stroke="#6366f1" stroke-width="2" />
+      <circle class="ring-select" cx="105" cy="59" r="15" fill="none" stroke="#6366f1" stroke-width="2" />
     </g>
   </g>
 

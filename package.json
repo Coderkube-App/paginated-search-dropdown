@@ -1,6 +1,6 @@
 {
   "name": "paginated-search-dropdown",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A highly customizable, paginated async search dropdown for React Native (Expo and Bare).",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
